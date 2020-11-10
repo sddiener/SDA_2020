@@ -59,10 +59,12 @@ def get_sentiment(text_col):
 
     return polarity, subjectivity
 
+
 def plot_missing_values(data):
     sns.heatmap(data.isnull(), cbar=False)
     plt.title("Missing values in tweets data frame")
     plt.show()
+
 
 def plot_wordcloud(text_col):
     text = ' '.join(text_col)
@@ -76,6 +78,13 @@ def plot_wordcloud(text_col):
     plt.axis("off")
     plt.show()
 
+
+def plot_sentiment_dist(sent_col):
+    sns.distplot(sent_col)
+    plt.title("Distribution of sentiment")
+    plt.show()
+
+
 # %% Main
 def main():
     data_dir = "data/"
@@ -88,6 +97,7 @@ def main():
     pd.Series(' '.join(data['text']).split()).value_counts()[:10].plot.bar()
     pd.Series(' '.join(data['text_clean']).split()).value_counts()[:10].plot.bar()
     plot_wordcloud(data['text_clean'])
+    plot_sentiment_dist(data['sent'])
     print(data.text[0])
     print(data.text_clean)
 
