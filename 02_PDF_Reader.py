@@ -1,9 +1,11 @@
 # %% Setup
 import os
 import pandas as pd
+import numpy as np
 import time
 import datetime
 
+import cv2
 import pytesseract
 from pdf2image import convert_from_path
 
@@ -26,6 +28,12 @@ def main():
 
         # iii) loop page-images and apply OCR
         for i, img in enumerate(imgs):
+            # scale images to increase OCR accuracy
+            height, width = img.size
+            img = np.array(img)
+            img = cv2.resize(img, (3 * width, 3 * height), interpolation=cv2.INTER_LINEAR)
+            img = cv2.bitwise_not(img)
+
             # tesseract needs to be installed + german training data has to be downloaded and put into
             # C:\ProgramData\Anaconda3\envs\*env_name*\Library\bin\tessdata
             # can be downloaded from https://github.com/tesseract-ocr/tessdata/blob/master/deu.traineddata

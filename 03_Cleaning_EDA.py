@@ -3,18 +3,19 @@ import pandas as pd
 import numpy as np
 import time
 import textwrap
+import matplotlib
 from matplotlib import pyplot as plt
 import seaborn as sns
 from wordcloud import WordCloud
 
 import re
 from textblob import TextBlob
-import nltk
 from nltk import WordNetLemmatizer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 
 
+# import nltk
 # nltk.download('stopwords')
 # nltk.download('punkt')
 # nltk.download('wordnet')
@@ -22,11 +23,14 @@ from nltk.corpus import stopwords
 # %% Functions
 def clean_texts(text_col):
     start_time = time.time()
-    print("Cleaning {} texts...".format(len(data)))
+    print("Cleaning {} texts...".format(len(text_col)))
 
     # define stop words
     stop_words = set(stopwords.words('english'))
-    stop_words.update(('wwwsnbchsnbsnbchzurich', 'press', 'relationspo', 'box', 'zurichtelephone',))
+    stop_words.update(('wwwsnbchsnbsnbchzurich', 'press', 'relationspo', 'box', 'zurichtelephone',
+                       'suisse', 'swiss', 'schweizerische', 'svizzera', 'national', 'nationale', 'naziunala',
+                       'nazionale', 'bank', 'banca', 'nationalbankbanque', 'pcommunicationspo', 'ch', 'suissebanca',
+                       'svizzerabanca', 'svizraswiss', 'release', 'svizrapress', 'communicationssnbchberne'))
 
     # clean on tweet level
     text_col = text_col.apply(lambda x: re.sub(r'', '', x))  #
@@ -50,7 +54,7 @@ def clean_texts(text_col):
 
 def get_sentiment(text_col):
     start_time = time.time()
-    print("Calculating sentiment of {} texts...".format(len(data)))
+    print("Calculating sentiment of {} texts...".format(len(text_col)))
 
     polarity = text_col.apply(lambda x: TextBlob(x).sentiment.polarity)
     subjectivity = text_col.apply(lambda x: TextBlob(x).sentiment.subjectivity)
@@ -84,22 +88,41 @@ def plot_sentiment_dist(sent_col):
     plt.title("Distribution of sentiment")
     plt.show()
 
+def plot_sentiment_dev(sent_col, date_col):
+    dates = matplotlib.dates.date2num(date_col)
+    matplotlib.pyplot.plot_date(dates, sent_col)
+    plt.title("Sentiment Score over time")
+    plt.show()
+
 
 # %% Main
 def main():
+    # Cleaning
     data_dir = "data/"
-    data = pd.read_excel(data_dir + 'articles_raw_gen2020-11-07.xlsx', index_col=0)
+    df = pd.read_excel(data_dir + 'articles_raw_gen2020-11-07.xlsx', index_col=0)
+    df['date'] = pd.to_datetime(df['date'])
 
-    data['text_clean'] = clean_texts(data['text'])
-    data['polarity'], data['sent'] = get_sentiment(data['text_clean'])
+    df['text_clean'] = clean_texts(df['text'])
+    df['polarity'], df['sent'] = get_sentiment(df['text_clean'])
 
-    plot_missing_values(data)
-    pd.Series(' '.join(data['text']).split()).value_counts()[:10].plot.bar()
-    pd.Series(' '.join(data['text_clean']).split()).value_counts()[:10].plot.bar()
-    plot_wordcloud(data['text_clean'])
-    plot_sentiment_dist(data['sent'])
-    print(data.text[0])
-    print(data.text_clean)
+    df = df[df['sent'] != 0]
+
+    df = df.groupby('filename').agg({'date': 'first',
+                                     'polarity': 'mean',
+                                     'sent': 'mean',
+                                     'text': lambda x: ''.join(x),
+                                     'text_clean': lambda x: ','.join(x)})
+
+    # EDA
+    print(df.text_clean[90])
+    plot_missing_values(df)
+    pd.Series(' '.join(df['text']).split()).value_counts()[:10].plot.bar()
+    pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
+    plot_wordcloud(df['text_clean'])
+    plot_sentiment_dist(df['sent'])
+    plot_sentiment_dev(df['sent'], df['date'])
+
+
 
 
 # %% Run file
