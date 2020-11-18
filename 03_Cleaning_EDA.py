@@ -103,7 +103,7 @@ def main():
     df['date'] = pd.to_datetime(df['date'])
 
     df['text_clean'] = clean_texts(df['text'])
-    df['polarity'], df['sent'] = get_sentiment(df['text_clean'])
+    df['polarity'], df['subjectivity'] = get_sentiment(df['text_clean'])
 
     df = df[df['sent'] != 0]
 
