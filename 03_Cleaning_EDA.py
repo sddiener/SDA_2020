@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import time
 import textwrap
+import datetime
 import matplotlib
 from matplotlib import pyplot as plt
 import seaborn as sns
@@ -105,13 +106,15 @@ def main():
     df['text_clean'] = clean_texts(df['text'])
     df['polarity'], df['subjectivity'] = get_sentiment(df['text_clean'])
 
-    df = df[df['sent'] != 0]
+    # df = df[df['subjectivity'] != 0]
 
     df = df.groupby('filename').agg({'date': 'first',
                                      'polarity': 'mean',
-                                     'sent': 'mean',
+                                     'subjectivity': 'mean',
                                      'text': lambda x: ''.join(x),
                                      'text_clean': lambda x: ','.join(x)})
+
+    df.to_excel('data/articles_clean_gen{}.xlsx'.format(datetime.date.today()), engine='xlsxwriter')
 
     # EDA
     print(df.text_clean[90])
@@ -119,8 +122,8 @@ def main():
     pd.Series(' '.join(df['text']).split()).value_counts()[:10].plot.bar()
     pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
     plot_wordcloud(df['text_clean'])
-    plot_sentiment_dist(df['sent'])
-    plot_sentiment_dev(df['sent'], df['date'])
+    plot_sentiment_dist(df['subjectivity'])
+    plot_sentiment_dev(df['subjectivity'], df['date'])
 
 
 
