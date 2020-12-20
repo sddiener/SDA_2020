@@ -17,6 +17,7 @@ Consumption_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=1573D
 GovSpend_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=3F35BD60FBC44B0E9380EFA27A0622CF?SERIES_KEY=MNA.Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.EUR.V.N&type=csv"
 Export_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=5A4DE9E92D17B294D6A5315EE8355389?SERIES_KEY=MNA.Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.EUR.V.N&type=csv"
 Import_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=E521FE1B420F2DADB8A4B3B88B00B6A9?SERIES_KEY=MNA.Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.EUR.V.N&type=csv"
+Unemp_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=B3312C4AA394270B0016D1C9BFD78ECB?SERIES_KEY=ENA.Q.Y.I8.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N&type=csv"
 
 # GDP typically consisty of Y = C + I + G + (X-M)
 urllib.request.urlretrieve(GDP_url, "data/GDP_data.csv")
@@ -25,6 +26,7 @@ urllib.request.urlretrieve(Consumption_url, "data/Consumption_data.csv")
 urllib.request.urlretrieve(GovSpend_url, "data/GovSpend_data.csv")
 urllib.request.urlretrieve(Export_url, "data/Export_data.csv")
 urllib.request.urlretrieve(Import_url, "data/Import_data.csv")
+urllib.request.urlretrieve(Unemp_url, "data/Unemp_data.csv")
 
 GDP_data = pd.read_csv('data/GDP_data.csv', skiprows=range(1, 5))
 Eurlibor_data = pd.read_csv('data/Eurlibor_data.csv', skiprows=range(1, 5))
@@ -32,6 +34,8 @@ Consumption_data = pd.read_csv('data/Consumption_data.csv', skiprows=range(1, 5)
 GovSpend_data = pd.read_csv('data/GovSpend_data.csv', skiprows=range(1, 5))
 Export_data = pd.read_csv('data/Export_data.csv', skiprows=range(1, 5))
 Import_data = pd.read_csv('data/Import_data.csv', skiprows=range(1, 5))
+Unemp_data = pd.read_csv('data/Unemp_data.csv', skiprows=range(1, 5))
+
 
 # Convert monthly Eurlibor to quarterly data
 # df.rename(index=lambda s: s[4:] + '!!')
@@ -40,23 +44,43 @@ Import_data = pd.read_csv('data/Import_data.csv', skiprows=range(1, 5))
 
 # %% Data Cleaning
 
-GDP_data.shape
-Eurlibor_data.shape
-Consumption_data.shape
-GovSpend_data.shape
-Export_data.shape
-Import_data.shape
-
-# Convert GDP to GDP_growth for prediction
-#GDP_gr_data = GDP_data.multiply(10 ^ 6).pct_change(-1).add(1).pow(4).add(-1)
+# Convert absolutes to change over period
+GDP_data = GDP_data.multiply(10 ^ 6).pct_change(-1)
+Eurlibor_data = Eurlibor_data.multiply(10 ^ 6).pct_change(-1)
+Consumption_data = Consumption_data.multiply(10 ^ 6).pct_change(-1)
+GovSpend_data = GovSpend_data.multiply(10 ^ 6).pct_change(-1)
+Export_data = Export_data.multiply(10 ^ 6).pct_change(-1)
+Import_data = Import_data.multiply(10 ^ 6).pct_change(-1)
+Unemp_data = Unemp_data.multiply(10 ^ 6).pct_change(-1)
 
 # Construct final DataFrame
-data = pd.concat([GDP_data, Consumption_data, GovSpend_data, Export_data, Import_data], axis=1)
-data.columns = ["GDP", "Consumption", "GovSpend", "Exports", "Imports"]
+data = [GDP_data, Consumption_data, GovSpend_data, Export_data, Import_data, Unemp_data]
+data = pd.concat(data, axis=1)
+data.columns = ["GDP", "Consumption", "GovSpend", "Exports", "Imports", "Unemp"]
 
 # remove NA caused by growth rate calculation
 data = data.dropna()
 data.isna().sum()
+
+# plot data
+fig, axs = plt.subplots(3, 2)
+plt.figure(figsize=(30,10))
+fig.suptitle('Parameters')
+axs[0, 0].plot(data.GDP)
+axs[0, 0].set_title("GDP")
+axs[0, 1].plot(data.Consumption)
+axs[0, 1].set_title("Consumption")
+axs[1, 0].plot(data.GovSpend)
+axs[1, 0].set_title("GovSpend")
+axs[1, 1].plot(data.Exports)
+axs[1, 1].set_title("Exports")
+axs[2, 0].plot(data.Imports)
+axs[2, 0].set_title("Imports")
+axs[2, 1].plot(data.Unemp)
+axs[2, 1].set_title("Unemp")
+fig.tight_layout()
+plt.show()
+
 
 # %% Model
 
@@ -85,8 +109,4 @@ x_ax = range(len(X_test))
 plt.scatter(x_ax, y_test, s=5, color='blue', label='original')
 plt.plot(x_ax, y_pred, lw=0.8, color='red', label='predicted')
 plt.legend()
-plt.show()
-
-GDP_data.plot()
-Eurlibor_data.plot()
 plt.show()
