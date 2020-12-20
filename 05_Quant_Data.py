@@ -82,7 +82,7 @@ fig.tight_layout()
 plt.show()
 
 
-# %% Model
+# %% Model Prep
 
 # split data into X / Y
 #Y = data['GDP_gr']
@@ -92,6 +92,8 @@ X = data.loc[:, data.columns != 'GDP']
 
 # Split data into train / test
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.3, random_state=2020)
+
+# %% Model Train
 
 alphas = [0.0001, 0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 1]
 elastic_cv = ElasticNetCV(alphas=alphas, cv=5)

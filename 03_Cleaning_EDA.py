@@ -20,6 +20,14 @@ from nltk.corpus import stopwords
 # nltk.download('stopwords')
 # nltk.download('punkt')
 # nltk.download('wordnet')
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.decomposition import LatentDirichletAllocation as LDA
+import pyLDAvis
+from pyLDAvis import sklearn as sklearn_lda
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 # %% Functions
 def clean_texts(text_col):
@@ -53,9 +61,9 @@ def clean_texts(text_col):
     return text_col
 
 
-def get_sentiment(text_col):
+def get_polarity_subjectivity(text_col):
     start_time = time.time()
-    print("Calculating sentiment of {} texts...".format(len(text_col)))
+    print("Calculating polarity / subjectivity of {} texts...".format(len(text_col)))
 
     polarity = text_col.apply(lambda x: TextBlob(x).sentiment.polarity)
     subjectivity = text_col.apply(lambda x: TextBlob(x).sentiment.subjectivity)
@@ -84,16 +92,76 @@ def plot_wordcloud(text_col):
     plt.show()
 
 
-def plot_sentiment_dist(sent_col):
+def plot_polarity_subjectivity_dist(sent_col):
     sns.distplot(sent_col)
     plt.title("Distribution of sentiment")
     plt.show()
 
-def plot_sentiment_dev(sent_col, date_col):
+def plot_polarity_subjectivity_dev(sent_col, date_col):
     dates = matplotlib.dates.date2num(date_col)
     matplotlib.pyplot.plot_date(dates, sent_col)
-    plt.title("Sentiment Score over time")
+    plt.title("Polarity Score over time")
     plt.show()
+
+# Helper function
+def plot_10_most_common_words(count_data, count_vectorizer):
+    words = count_vectorizer.get_feature_names()
+    total_counts = np.zeros(len(words))
+    for t in count_data:
+        total_counts += t.toarray()[0]
+
+    count_dict = (zip(words, total_counts))
+    count_dict = sorted(count_dict, key=lambda x: x[1], reverse=True)[0:10]
+    words = [w[0] for w in count_dict]
+    counts = [w[1] for w in count_dict]
+    x_pos = np.arange(len(words))
+
+    plt.figure(2, figsize=(15, 15 / 1.6180))
+    plt.subplot(title='10 most common words')
+    sns.set_context("notebook", font_scale=1.25, rc={"lines.linewidth": 2.5})
+    sns.barplot(x_pos, counts, palette='husl')
+    plt.xticks(x_pos, words, rotation=90)
+    plt.xlabel('words')
+    plt.ylabel('counts')
+    plt.show()
+
+
+# Helper function
+def print_topics(model, count_vectorizer, n_top_words):
+    words = count_vectorizer.get_feature_names()
+    for topic_idx, topic in enumerate(model.components_):
+        print("\nTopic #%d:" % topic_idx)
+        print(" ".join([words[i]
+                        for i in topic.argsort()[:-n_top_words - 1:-1]]))
+
+
+def train_plot_LDA(df):
+
+    # Initialise the count vectorizer with the English stop words
+    count_vectorizer = CountVectorizer(stop_words='english')
+    # Fit and transform the processed titles
+    count_data = count_vectorizer.fit_transform(df['text_clean'])
+    # Visualise the 10 most common words
+    plot_10_most_common_words(count_data, count_vectorizer)
+
+    # Tweak the two parameters below
+    number_topics = 8
+    number_words = 10
+    # Create and fit the LDA model
+    lda = LDA(n_components=number_topics, n_jobs=-1)
+    lda.fit(count_data)
+    # Print the topics found by the LDA model
+    print("Topics found via LDA:")
+    print_topics(lda, count_vectorizer, number_words)
+
+    import warnings
+    warnings.simplefilter("ignore", DeprecationWarning)
+
+    LDAvis_prepared = sklearn_lda.prepare(lda, count_data, count_vectorizer)
+    pyLDAvis.save_html(LDAvis_prepared, './ldavis_prepared_.html')
+
+
+
 
 
 # %% Main
@@ -104,9 +172,7 @@ def main():
     df['date'] = pd.to_datetime(df['date'])
 
     df['text_clean'] = clean_texts(df['text'])
-    df['polarity'], df['subjectivity'] = get_sentiment(df['text_clean'])
-
-    # df = df[df['subjectivity'] != 0]
+    df['polarity'], df['subjectivity'] = get_polarity_subjectivity(df['text_clean'])
 
     df = df.groupby('filename').agg({'date': 'first',
                                      'polarity': 'mean',
@@ -117,15 +183,13 @@ def main():
     df.to_excel('data/articles_clean.xlsx', engine='xlsxwriter')
 
     # EDA
-    print(df.text_clean[90])
     plot_missing_values(df)
     pd.Series(' '.join(df['text']).split()).value_counts()[:10].plot.bar()
     pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
     plot_wordcloud(df['text_clean'])
-    plot_sentiment_dist(df['subjectivity'])
-    plot_sentiment_dev(df['subjectivity'], df['date'])
-
-
+    plot_polarity_subjectivity_dist(df['polarity'])
+    plot_polarity_subjectivity_dev(df['polarity'], df['date'])
+    train_plot_LDA(df)
 
 
 # %% Run file
