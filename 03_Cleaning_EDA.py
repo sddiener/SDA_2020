@@ -114,7 +114,7 @@ def main():
                                      'text': lambda x: ''.join(x),
                                      'text_clean': lambda x: ','.join(x)})
 
-    df.to_excel('data/articles_clean_gen{}.xlsx'.format(datetime.date.today()), engine='xlsxwriter')
+    df.to_excel('data/articles_clean.xlsx', engine='xlsxwriter')
 
     # EDA
     print(df.text_clean[90])
