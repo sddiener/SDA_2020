@@ -4,7 +4,7 @@
 # Importing modules
 import pandas as pd
 
-df = pd.read_pickle('Sentiment/data_clean')  # import from 03_Cleaning_EDA the cleaned data df
+df = pd.read_excel('data/articles_clean.xlsx') # import data generatedfrom 03_Cleaning_EDA 
 
 # Print head
 df.head()
@@ -24,7 +24,6 @@ sns.set_style('whitegrid')
 
 # Helper function
 def plot_10_most_common_words(count_data, count_vectorizer):
-    import matplotlib.pyplot as plt
     words = count_vectorizer.get_feature_names()
     total_counts = np.zeros(len(words))
     for t in count_data:

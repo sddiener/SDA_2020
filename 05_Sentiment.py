@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 # from Sentiment.Dictionary import fed_dict, lm_dict, negate  # Import the dictionaries
-from Dictionary import fed_dict, lm_dict, negate  # Import the dictionaries
+from data.Dictionary import fed_dict, lm_dict, negate  # Import the dictionaries
 
-Data = pd.read_pickle('data_clean')  # import from 03_Cleaning_EDA the cleaned data df
+Data = pd.read_excel('data/articles_clean.xlsx')  # import from 03_Cleaning_EDA the cleaned data df
 
 # Dictionary tone assessment will compare them by Index (need the numbers back)
 Data['Index'] = range(0, len(Data))
