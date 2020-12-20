@@ -37,10 +37,6 @@ Import_data = pd.read_csv('data/Import_data.csv', skiprows=range(1, 5))
 Unemp_data = pd.read_csv('data/Unemp_data.csv', skiprows=range(1, 5))
 
 
-# Convert monthly Eurlibor to quarterly data
-# df.rename(index=lambda s: s[4:] + '!!')
-# Eurlibor_data #TODO: convert + add Quarterly EURLIBOR
-
 
 # %% Data Cleaning
 

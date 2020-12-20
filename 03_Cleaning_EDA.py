@@ -1,12 +1,6 @@
-import os
 import pandas as pd
-import numpy as np
 import time
-import textwrap
-import datetime
 import matplotlib
-from matplotlib import pyplot as plt
-import seaborn as sns
 from wordcloud import WordCloud
 
 import re
@@ -15,11 +9,6 @@ from nltk import WordNetLemmatizer
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 
-
-# import nltk
-# nltk.download('stopwords')
-# nltk.download('punkt')
-# nltk.download('wordnet')
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation as LDA
 import pyLDAvis
@@ -28,6 +17,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+# Needs to be downloaded once!
+# import nltk
+# nltk.download('stopwords')
+# nltk.download('punkt')
+# nltk.download('wordnet')
 
 # %% Functions
 def clean_texts(text_col):
@@ -159,10 +153,6 @@ def train_plot_LDA(df):
 
     LDAvis_prepared = sklearn_lda.prepare(lda, count_data, count_vectorizer)
     pyLDAvis.save_html(LDAvis_prepared, './ldavis_prepared_.html')
-
-
-
-
 
 # %% Main
 def main():
