@@ -14,6 +14,7 @@ Data = pd.read_excel('data/articles_clean.xlsx')  # import from 03_Cleaning_EDA 
 
 # Dictionary tone assessment will compare them by Index (need the numbers back)
 Data['Index'] = range(0, len(Data))
+
 # Make 'date' column as the index of Data
 Data.set_index(['date'], inplace=True)
 Data.head()
@@ -79,14 +80,8 @@ def tone_count_with_negation_check(dict, article):
 
     return results
 
-
-# load libor for comparison
-libor = pd.read_excel('3M_Libor_CHF.xls', skiprows=[0, 1, 2, 3, 4, 5, 6, 7, 8], header=1).set_index(
-    'observation_date')
-libor = libor.rename(columns={'CHF3MTD156N': '3M'})
-
-# -------------------------for the dictionary lm_dict count the positve & negative words
-temp = [tone_count_with_negation_check(fed_dict, x) for x in Data.text_clean]
+# %% Count the positive and negative words using dictionary lm_dict or fed_dict
+temp = [tone_count_with_negation_check(fed_dict, x) for x in Data.text_clean] # use lm_dict otherwise
 temp = pd.DataFrame(temp)
 
 Data['wordcount'] = temp.iloc[:, 0].values
@@ -99,8 +94,9 @@ Data['sentiment'] = (Data['NPositiveWords'] - Data['NNegativeWords']) / Data['wo
 Data['Poswords'] = temp.iloc[:, 3].values
 Data['Negwords'] = temp.iloc[:, 4].values
 
-#  Plot Sentiment analysis
+# %%  Plot Sentiment analysis -------------------------------------------------------------------------------------------------------
 NetSentiment = Data['NPositiveWords'] - Data['NNegativeWords']
+NetSentiment.to_csv('data/NetSentiment') # save the sentiment indicator
 
 plt.figure(figsize=(15, 7))
 ax = plt.subplot()
@@ -129,13 +125,13 @@ datemax = np.datetime64(Data.index[-1], 'Y') + np.timedelta64(1, 'Y')
 ax.set_xlim(datemin, datemax)
 
 ax.grid(True)
-
-# plt.plot(libor.index, libor['3M'], c='blue', linewidth=1.0)
+ax.axvspan(['USREC'],color='grey',alpha=0.5)
 
 
 plt.show()
+plt.savefig('plots/count_words.png')
 
-#  ---------------------------------------------- change over time (first derivative)
+# %% change over time (first derivative) --------------------------------------------------------------------------------------------
 firstderivative = (NetSentiment.shift(1) - NetSentiment) / NetSentiment
 
 fig, ax = plt.subplots(figsize=(15, 7))
@@ -155,8 +151,9 @@ ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
 ax.grid(True)
 
 plt.show()
+plt.savefig('plots/delta_sentiment.png')
 
-# ------------------------------------------------- Counts of normalized data
+# %% Counts of normalized data -------------------------------------------------------------------------------------------------------
 # Normalize data
 NPositiveWordsNorm = Data['NPositiveWords'] / Data['wordcount'] * np.mean(Data['wordcount'])
 NNegativeWordsNorm = Data['NNegativeWords'] / Data['wordcount'] * np.mean(Data['wordcount'])
@@ -186,30 +183,26 @@ ax.set_xlim(datemin, datemax)
 ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
 ax.grid(True)
 
-# plt.plot(libor.index, libor['3M'], c='blue', linewidth=1.0)
-
-
 plt.show()
+plt.savefig('plots/count_words_norm.png')
 
-# --------------------------------------------------------------- Net sentiment implied BoW over time (normalized)
+
+# %% Net sentiment implied BoW over time (normalized) --------------------------------------------------------------------------------
+
 fig, ax = plt.subplots(figsize=(15, 7))
 ax.plot(Data.index, NetSentimentNorm, c='red', linewidth=1.0)
 
 plt.title('Net sentiment implied by BoW over time (normalized)', size='medium')
 
-# format the ticks
-# round to nearest years.
+# format the ticks and round to nearest years.
 datemin = np.datetime64(Data.index[0], 'Y')
 datemax = np.datetime64(Data.index[-1], 'Y') + np.timedelta64(1, 'Y')
 ax.set_xlim(datemin, datemax)
-
-liborNorm = (libor['3M'] - np.mean(libor['3M'])) / np.std(libor['3M'])
-
-# plt.plot(libor.index, libor['3M'], c='blue', linewidth=1.0)
-plt.plot(libor.index, liborNorm, c='blue', linewidth=1.0)
 
 # format the coords message box
 ax.format_xdata = mdates.DateFormatter('%Y-%m-%d')
 ax.grid(True)
 
 plt.show()
+plt.savefig('plots/net_sentiment_norm.png')
+
