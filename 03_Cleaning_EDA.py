@@ -183,7 +183,6 @@ def main():
     plot_polarity_subjectivity_dev(df['polarity'], df['date'])
     train_plot_LDA(df)
 
-
 # %% Run file
 if __name__ == '__main__':
     main()
