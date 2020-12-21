@@ -1,4 +1,4 @@
-# SDA_2020: Sentiment Analysis of Central Bank statement
+# Sentiment Analysis of Central Bank statement
 
 ## Repository structure
 
