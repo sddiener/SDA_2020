@@ -3,18 +3,16 @@ Name of Quantlet: 'Sentiment Analysis of Central Bank statement'
 
 Published in: 'SDA_2020_St_Gallen'
 
-Description: 'Scraping the SNB assessment of economic situation from 2000 to 2019. Performing LDA analysis and building a sentiment indicator to ...explain crypto prices.... '
+Description: 'Scraping the SNB assessment of economic situation from 2000 to 2020. Performing LDA analysis and building a sentiment indicator to forecast Switzerlands GDP'
 
-Keywords: 'Textmining, Sentiement, Analyis, Latent Dirichlet Allocation, Unsupervised Machine Learning, Topic Modelling, regression'
+Keywords: 'Textmining, Sentiment, Analyis, Latent Dirichlet Allocation, Unsupervised Machine Learning, Topic Modelling, regression'
 
 Author: 'Matthias Spitziger, Stefan Diener, Jan Scheidegger'
 
 See also: 'optional: listing related Quantlets or Github code'
 
-Submitted:  '01. Jan 2020, John Doe'
+Submitted:  '24. December 2020'
 
-Datafile: 'optional: for your data sets - delete if not used'
+Input: 'data folder, LagebeurteilungenSNB, Dictionary.py, fred economic variables'
 
-Input: 'optional'
-
-Output:  'optional'
+Output:  'plots folder, LDA_visualization.html'
