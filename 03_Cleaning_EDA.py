@@ -84,6 +84,7 @@ def plot_wordcloud(text_col):
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
     plt.show()
+    plt.savefig('plots/wordcloud.png')
 
 
 def plot_polarity_subjectivity_dist(sent_col):
@@ -118,6 +119,7 @@ def plot_10_most_common_words(count_data, count_vectorizer):
     plt.xlabel('words')
     plt.ylabel('counts')
     plt.show()
+    plt.savefig('plots/most_common_words.png')
 
 
 # Helper function
@@ -158,7 +160,7 @@ def train_plot_LDA(df):
 def main():
     # Cleaning
     data_dir = "data/"
-    df = pd.read_excel(data_dir + 'articles_raw_gen2020-11-07.xlsx', index_col=0)
+    df = pd.read_excel(data_dir + 'articles_raw.xlsx', index_col=0)
     df['date'] = pd.to_datetime(df['date'])
 
     df['text_clean'] = clean_texts(df['text'])

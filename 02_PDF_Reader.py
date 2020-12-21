@@ -44,7 +44,7 @@ def main():
 
     # save final df
     df = pd.DataFrame(data, columns=columns)
-    df.to_excel('data/articles_raw_gen{}.xlsx'.format(datetime.date.today()), engine='xlsxwriter')
+    df.to_excel('data/articles_raw.xlsx', engine='xlsxwriter')
 
     print("Saved text in DataFrame. Elapsed time: {}".format(time.strftime("%Mm %Ss", time.gmtime(time.time()-start))))
 
