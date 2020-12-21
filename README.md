@@ -1,8 +1,8 @@
 # Sentiment Analysis of Central Bank statement
 
-## Repository structure
-
 short introduction
+
+## Repository structure
 
 ### 01_SNB_PDF_Webscaper
 This script scrapes the [monetary policy assessment](https://www.snb.ch/en/iabout/monpol/id/monpol_current) pdf files of the Swiss National Bank from the period 2000 to 2020 and saves them in the data folder.
