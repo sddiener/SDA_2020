@@ -154,7 +154,7 @@ def train_plot_LDA(df):
     warnings.simplefilter("ignore", DeprecationWarning)
 
     LDAvis_prepared = sklearn_lda.prepare(lda, count_data, count_vectorizer)
-    pyLDAvis.save_html(LDAvis_prepared, './ldavis_prepared_.html')
+    pyLDAvis.save_html(LDAvis_prepared, './LDA_visualization_.html')
 
 # %% Main
 def main():
