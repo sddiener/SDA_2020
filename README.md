@@ -19,6 +19,7 @@ Wordcloud
 
 
 ![html](LDA_visualization.html)
+ - https://github.com/sddiener/SDA_2020/blob/master/LDA_visualization.html
 
 
 ### 04_Sentiment
