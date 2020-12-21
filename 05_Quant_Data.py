@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+import pandas_datareader.data as web
+import datetime
 import seaborn as sns
 import sklearn
 import urllib.request
@@ -11,56 +13,82 @@ from sklearn.preprocessing import StandardScaler
 
 # %% Download macro data -------------------------------------------------------------------------------------
 
-GDP_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=44DBD7559D119BEF9DA13CCEB70C23E1?SERIES_KEY=MNA.Q.Y.I8.W2.S1.S1.B.B1GQ._Z._Z._Z.EUR.V.N&type=csv"
-Eurlibor_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=0014F48DEAEA2500294F6E3962E49775?SERIES_KEY=143.FM.M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA&type=csv"
-Consumption_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=1573D4C068E9F1CA1116D3998B81380E?SERIES_KEY=MNA.Q.Y.I8.W0.S1M.S1.D.P31._Z._Z._T.EUR.V.N&type=csv"
-GovSpend_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=3F35BD60FBC44B0E9380EFA27A0622CF?SERIES_KEY=MNA.Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.EUR.V.N&type=csv"
-Export_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=5A4DE9E92D17B294D6A5315EE8355389?SERIES_KEY=MNA.Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.EUR.V.N&type=csv"
-Import_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=E521FE1B420F2DADB8A4B3B88B00B6A9?SERIES_KEY=MNA.Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.EUR.V.N&type=csv"
-Unemp_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=B3312C4AA394270B0016D1C9BFD78ECB?SERIES_KEY=ENA.Q.Y.I8.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N&type=csv"
+# import data from fred
+start = datetime.datetime(1999, 9, 1) #sentiment indicator starts from 2000
+end = datetime.date.today()
 
-# GDP typically consisty of Y = C + I + G + (X-M)
-urllib.request.urlretrieve(GDP_url, "data/GDP_data.csv")
-urllib.request.urlretrieve(Eurlibor_url, "data/Eurlibor_data.csv")
-urllib.request.urlretrieve(Consumption_url, "data/Consumption_data.csv")
-urllib.request.urlretrieve(GovSpend_url, "data/GovSpend_data.csv")
-urllib.request.urlretrieve(Export_url, "data/Export_data.csv")
-urllib.request.urlretrieve(Import_url, "data/Import_data.csv")
-urllib.request.urlretrieve(Unemp_url, "data/Unemp_data.csv")
+GDP_data = web.DataReader('CPMNACSAB1GQCH', 'fred', start, end).to_period('Q') # Gross Domestic Product for Switzerland (CPMNACSAB1GQCH)	
+Unemp_data = web.DataReader('LMUNRRTTCHQ156N', 'fred', start, end).to_period('Q') # Registered Unemployment Rate for Switzerland (LMUNRRTTCHQ156N)
+rec_indicator = web.DataReader('CHEREC', 'fred', start, end).to_period('Q') # OECD based Recession Indicators for Switzerland from the Period following the Peak through the Trough (CHEREC)
+Import_data = web.DataReader('CHEIMPORTQDSMEI', 'fred', start, end).to_period('Q') # Imports of Goods and Services in Switzerland (CHEIMPORTQDSMEI)
+Export_data = web.DataReader('CHEEXPORTQDSMEI', 'fred', start, end).to_period('Q') # Exports of Goods and Services in Switzerland (CHEEXPORTQDSMEI)
+GovSpend_data = web.DataReader('CHEGFCEQDSMEI', 'fred', start, end).to_period('Q') # Government Final Consumption Expenditure in Switzerland (CHEGFCEQDSMEI)	
+Consumption_data = web.DataReader('CHEPFCEQDSMEI', 'fred', start, end).to_period('Q') #Private Final Consumption Expenditure in Switzerland (CHEPFCEQDSMEI)	
 
-GDP_data = pd.read_csv('data/GDP_data.csv', skiprows=range(1, 5))
-Eurlibor_data = pd.read_csv('data/Eurlibor_data.csv', skiprows=range(1, 5))
-Consumption_data = pd.read_csv('data/Consumption_data.csv', skiprows=range(1, 5))
-GovSpend_data = pd.read_csv('data/GovSpend_data.csv', skiprows=range(1, 5))
-Export_data = pd.read_csv('data/Export_data.csv', skiprows=range(1, 5))
-Import_data = pd.read_csv('data/Import_data.csv', skiprows=range(1, 5))
-Unemp_data = pd.read_csv('data/Unemp_data.csv', skiprows=range(1, 5))
+# import the sentiment indicator
+NetSentiment_data = pd.read_csv('data/NetSentiment').rename(columns={'date':'DATE', '0':'Sentiment'})
+NetSentiment_data['DATE'] = pd.to_datetime(NetSentiment_data['DATE']).dt.to_period('Q') #transform date into quarter
+NetSentiment_data = NetSentiment_data.groupby('DATE').sum()
+
+
+# GDP_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=44DBD7559D119BEF9DA13CCEB70C23E1?SERIES_KEY=MNA.Q.Y.I8.W2.S1.S1.B.B1GQ._Z._Z._Z.EUR.V.N&type=csv"
+# Eurlibor_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=0014F48DEAEA2500294F6E3962E49775?SERIES_KEY=143.FM.M.U2.EUR.RT.MM.EURIBOR1YD_.HSTA&type=csv"
+# Consumption_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=1573D4C068E9F1CA1116D3998B81380E?SERIES_KEY=MNA.Q.Y.I8.W0.S1M.S1.D.P31._Z._Z._T.EUR.V.N&type=csv"
+# GovSpend_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=3F35BD60FBC44B0E9380EFA27A0622CF?SERIES_KEY=MNA.Q.Y.I8.W0.S13.S1.D.P3._Z._Z._T.EUR.V.N&type=csv"
+# Export_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=5A4DE9E92D17B294D6A5315EE8355389?SERIES_KEY=MNA.Q.Y.I8.W1.S1.S1.D.P6._Z._Z._Z.EUR.V.N&type=csv"
+# Import_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=E521FE1B420F2DADB8A4B3B88B00B6A9?SERIES_KEY=MNA.Q.Y.I8.W1.S1.S1.C.P7._Z._Z._Z.EUR.V.N&type=csv"
+# Unemp_url = "https://sdw.ecb.europa.eu/quickviewexport.do;jsessionid=B3312C4AA394270B0016D1C9BFD78ECB?SERIES_KEY=ENA.Q.Y.I8.W2.S1.S1._Z.EMP._Z._T._Z.PS._Z.N&type=csv"
+
+# # GDP typically consisty of Y = C + I + G + (X-M)
+# urllib.request.urlretrieve(GDP_url, "data/GDP_data.csv")
+# urllib.request.urlretrieve(Eurlibor_url, "data/Eurlibor_data.csv")
+# urllib.request.urlretrieve(Consumption_url, "data/Consumption_data.csv")
+# urllib.request.urlretrieve(GovSpend_url, "data/GovSpend_data.csv")
+# urllib.request.urlretrieve(Export_url, "data/Export_data.csv")
+# urllib.request.urlretrieve(Import_url, "data/Import_data.csv")
+# urllib.request.urlretrieve(Unemp_url, "data/Unemp_data.csv")
+
+# GDP_data = pd.read_csv('data/GDP_data.csv', skiprows=range(1, 5))
+# Eurlibor_data = pd.read_csv('data/Eurlibor_data.csv', skiprows=range(1, 5))
+# Consumption_data = pd.read_csv('data/Consumption_data.csv', skiprows=range(1, 5))
+# GovSpend_data = pd.read_csv('data/GovSpend_data.csv', skiprows=range(1, 5))
+# Export_data = pd.read_csv('data/Export_data.csv', skiprows=range(1, 5))
+# Import_data = pd.read_csv('data/Import_data.csv', skiprows=range(1, 5))
+# Unemp_data = pd.read_csv('data/Unemp_data.csv', skiprows=range(1, 5))
 
 
 
 # %% Data Cleaning
 
 # Convert absolutes to change over period
-GDP_data = GDP_data.multiply(10 ^ 6).pct_change(-1)
-Eurlibor_data = Eurlibor_data.multiply(10 ^ 6).pct_change(-1)
-Consumption_data = Consumption_data.multiply(10 ^ 6).pct_change(-1)
-GovSpend_data = GovSpend_data.multiply(10 ^ 6).pct_change(-1)
-Export_data = Export_data.multiply(10 ^ 6).pct_change(-1)
-Import_data = Import_data.multiply(10 ^ 6).pct_change(-1)
-Unemp_data = Unemp_data.multiply(10 ^ 6).pct_change(-1)
+# GDP_data = GDP_data.multiply(10 ^ 6).pct_change(-1)
+# Consumption_data = Consumption_data.multiply(10 ^ 6).pct_change(-1)
+# GovSpend_data = GovSpend_data.multiply(10 ^ 6).pct_change(-1)
+# Export_data = Export_data.multiply(10 ^ 6).pct_change(-1)
+# Import_data = Import_data.multiply(10 ^ 6).pct_change(-1)
+# Unemp_data = Unemp_data.multiply(10 ^ 6).pct_change(-1)
+
+
+GDP_data = np.log(GDP_data).diff()
+Consumption_data = np.log(Consumption_data).diff()
+GovSpend_data = np.log(GovSpend_data).diff()
+Export_data = np.log(Export_data).diff()
+Import_data = np.log(Import_data).diff()
+Unemp_data = np.log(Unemp_data).diff()
+
 
 # Construct final DataFrame
-data = [GDP_data, Consumption_data, GovSpend_data, Export_data, Import_data, Unemp_data]
+data = [GDP_data, Consumption_data, GovSpend_data, Export_data, Import_data, Unemp_data, NetSentiment_data]
 data = pd.concat(data, axis=1)
-data.columns = ["GDP", "Consumption", "GovSpend", "Exports", "Imports", "Unemp"]
+data.columns = ["GDP", "Consumption", "GovSpend", "Exports", "Imports", "Unemp", 'NetSentiment']
+data.index = data.index.to_timestamp() 
 
 # remove NA caused by growth rate calculation
 data = data.dropna()
 data.isna().sum()
 
 # plot data
-fig, axs = plt.subplots(3, 2)
-plt.figure(figsize=(30,10))
+fig, axs = plt.subplots(4, 2)
 fig.suptitle('Parameters')
 axs[0, 0].plot(data.GDP)
 axs[0, 0].set_title("GDP")
@@ -74,8 +102,13 @@ axs[2, 0].plot(data.Imports)
 axs[2, 0].set_title("Imports")
 axs[2, 1].plot(data.Unemp)
 axs[2, 1].set_title("Unemp")
+axs[3, 0].plot(data.NetSentiment)
+axs[3, 0].set_title("Sentiment")
 fig.tight_layout()
-plt.show()
+
+fig.set_size_inches(12, 8)
+
+fig.savefig('plots/economic_varibales.png', dpi=300)
 
 
 # %% Model Prep
@@ -102,9 +135,11 @@ mse = mean_squared_error(y_test, y_pred)
 print("R2:{0:.4f}, MSE:{1:.4f}, RMSE:{2:.4f}".format(score, mse, np.sqrt(mse)))
 
 # %% Plot results
+plt.figure(figsize=(30,10))
 
 x_ax = range(len(X_test))
 plt.scatter(x_ax, y_test, s=5, color='blue', label='original')
 plt.plot(x_ax, y_pred, lw=0.8, color='red', label='predicted')
 plt.legend()
 plt.show()
+plt.savefig('plots/model_results.png')
