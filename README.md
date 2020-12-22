@@ -13,25 +13,24 @@ This script reads the pdf files from the folder data/lagebeurteilungenSNB with t
 ### 03_Cleaning_EDA
 This scipt cleans the unstrucuted text data and performs an LDA analysis. The output is LDA_visualization.html and several plots saved in the plots folder.
 
-10 most common words used in the monetary policy assessment
+#### 10 most common words used in the monetary policy assessment
 ![plot1](plots/most_common_words.png)
 
-Wordcloud
+#### Wordcloud
 ![plot2](plots/wordcloud.png)
 
-
-![html](LDA_visualization.html)
- - https://github.com/sddiener/SDA_2020/blob/master/LDA_visualization.html
+#### LDA Visualization
+![plot3](plots/LDA_Visualization.png)
 
 
 ### 04_Sentiment
 Count of positve vs. negative words with fed dictionary
-![plot3](plots/count_words.png)
+![plot4](plots/count_words.png)
 
 ### 05_Quant_Data
 
 Economic predictor variables for the GDP forecasting model
-![plot4](plots/economic_varibales.png)
+![plot5](plots/economic_varibales.png)
 
 Model results
-![plot5](plots/model_results.png)
+![plot6](plots/model_results.png)
