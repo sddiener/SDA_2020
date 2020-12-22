@@ -12,7 +12,11 @@ This script scrapes the [monetary policy assessment](https://www.snb.ch/en/iabou
 This script reads the pdf files from the folder data/lagebeurteilungenSNB with the package pytesseract. The output is an excel file called articles_raw.xlsx and saved in data folder.
 
 ### 03_Cleaning_EDA
-This scipt cleans the unstrucuted text data and performs an LDA analysis. The output is LDA_visualization.html and several plots saved in the plots folder.
+This scipt cleans the unstrucuted text data and performs an LDA analysis.
+The two inputs are taken from the data folder:
+- Dictionary.py (includes the [Fed dictionary](https://www.federalreserve.gov/econres/notes/ifdp-notes/constructing-a-dictionary-for-financial-stability-20170623.htm) and the [Lougrahn Mcdonald sentiment word list](https://sraf.nd.edu/textual-analysis/resources/))
+- articles_raw.xlsx
+The output generates an excel articles_clean.xlsx file, a LDA_visualization.html and several plots saved in the plots folder.
 
 #### 10 most common words used in the monetary policy assessment
 ![plot1](plots/most_common_words.png)
