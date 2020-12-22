@@ -16,6 +16,7 @@ This scipt cleans the unstrucuted text data and performs an LDA analysis.<br/>
 The two inputs are taken from the data folder:
 - Dictionary.py (includes the [Fed dictionary](https://www.federalreserve.gov/econres/notes/ifdp-notes/constructing-a-dictionary-for-financial-stability-20170623.htm) and the [Lougrahn Mcdonald sentiment word list](https://sraf.nd.edu/textual-analysis/resources/))
 - articles_raw.xlsx <br/>
+
 The output generates an excel articles_clean.xlsx file, a LDA_visualization.html and several plots saved in the plots folder.
 
 #### 10 most common words used in the monetary policy assessment
