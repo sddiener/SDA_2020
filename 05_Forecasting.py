@@ -5,15 +5,11 @@ import numpy as np
 from matplotlib import pyplot as plt
 import pandas_datareader.data as web
 import datetime
-import seaborn as sns
-import sklearn
-import urllib.request
 
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.linear_model import ElasticNetCV, ElasticNet, LinearRegression
-from sklearn.metrics import mean_squared_error, accuracy_score, r2_score
+from sklearn.linear_model import ElasticNet, LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split, GridSearchCV
-from sklearn.preprocessing import StandardScaler
 
 # %% Download macro data -------------------------------------------------------------------------------------
 
@@ -98,16 +94,8 @@ model_OLS = LinearRegression()
 param_OLS = {'fit_intercept': [True, False],
              'normalize': [True, False]}
 
-grid_OLS = GridSearchCV(model_OLS, param_OLS, cv=5, verbose=0, n_jobs=-1, return_train_score=True)
-grid_OLS = grid_OLS.fit(X_train, y_train)
-y_pred_OLS = grid_OLS.predict(X_test)
-
 model_ELN = ElasticNet()
 param_ELN = {'alpha': [0.0001, 0.001, 0.01, 0.1, 0.3, 0.5, 0.7, 1]}
-
-grid_ELN = GridSearchCV(model_ELN, param_ELN, cv=5, verbose=0, n_jobs=-1, return_train_score=True)
-grid_ELN = grid_ELN.fit(X_train, y_train)
-y_pred_ELN = grid_ELN.predict(X_test)
 
 model_RF = RandomForestRegressor()
 param_RF = {
@@ -117,11 +105,20 @@ param_RF = {
     'n_estimators': [10, 100, 500]
 }
 
+# gridsearch + predictions from best model
+grid_OLS = GridSearchCV(model_OLS, param_OLS, cv=5, verbose=0, n_jobs=-1, return_train_score=True)
+grid_OLS = grid_OLS.fit(X_train, y_train)
+y_pred_OLS = grid_OLS.predict(X_test)
+
+grid_ELN = GridSearchCV(model_ELN, param_ELN, cv=5, verbose=0, n_jobs=-1, return_train_score=True)
+grid_ELN = grid_ELN.fit(X_train, y_train)
+y_pred_ELN = grid_ELN.predict(X_test)
+
 grid_RF = GridSearchCV(model_RF, param_RF, cv=5, verbose=0, n_jobs=-1, return_train_score=True)
 grid_RF = grid_RF.fit(X_train, y_train)
 y_pred_RF = grid_RF.predict(X_test)
 
-# group
+# evaluate models
 models = [model_OLS, model_ELN, model_RF]
 parameters = [param_OLS, param_ELN, param_RF]
 grids = [grid_OLS, grid_ELN, grid_RF]

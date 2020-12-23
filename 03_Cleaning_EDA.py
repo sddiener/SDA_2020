@@ -1,4 +1,5 @@
 import pandas as pd
+import openpyxl  # install this dependency
 import time
 import matplotlib
 from wordcloud import WordCloud
@@ -66,13 +67,6 @@ def get_polarity_subjectivity(text_col):
 
     return polarity, subjectivity
 
-
-def plot_missing_values(data):
-    sns.heatmap(data.isnull(), cbar=False)
-    plt.title("Missing values in tweets data frame")
-    plt.show()
-
-
 def plot_wordcloud(text_col):
     text = ' '.join(text_col)
     # stop_words = ["covid19", "coronavirus"]
@@ -83,7 +77,6 @@ def plot_wordcloud(text_col):
     plt.title("Top Words")
     plt.imshow(wordcloud, interpolation='bilinear')
     plt.axis("off")
-    plt.show()
     plt.savefig('plots/wordcloud.png')
 
 
@@ -118,7 +111,6 @@ def plot_10_most_common_words(count_data, count_vectorizer):
     plt.xticks(x_pos, words, rotation=90)
     plt.xlabel('words')
     plt.ylabel('counts')
-    plt.show()
     plt.savefig('plots/most_common_words.png')
 
 
@@ -160,7 +152,7 @@ def train_plot_LDA(df):
 def main():
     # Cleaning
     data_dir = "data/"
-    df = pd.read_excel(data_dir + 'articles_raw.xlsx', index_col=0)
+    df = pd.read_excel(data_dir + 'articles_raw.xlsx', index_col=0, engine='openpyxl')
     df['date'] = pd.to_datetime(df['date'])
 
     df['text_clean'] = clean_texts(df['text'])
@@ -175,7 +167,6 @@ def main():
     df.to_excel('data/articles_clean.xlsx', engine='xlsxwriter')
 
     # EDA
-    plot_missing_values(df)
     pd.Series(' '.join(df['text']).split()).value_counts()[:10].plot.bar()
     pd.Series(' '.join(df['text_clean']).split()).value_counts()[:10].plot.bar()
     plot_wordcloud(df['text_clean'])
