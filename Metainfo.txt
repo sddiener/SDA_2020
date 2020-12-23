@@ -11,6 +11,6 @@ Author: 'Stefan Diener, Jan Scheidegger'
 
 Submitted:  '24. December 2020'
 
-Input: 'data folder, LagebeurteilungenSNB, Dictionary.py, fred economic variables'
+Input: ' Dictionary.py. All other inputs are scraped by the program itself (LagebeurteilungenSNB, Fred economic variables)'
 
-Output: 'plots folder (eg. wordcloud.png, model_results.png), LDA_visualization.html'
+Output: 'plots folder (eg. wordcloud.png, model_results.png), LDA_visualization.html, models folder'
