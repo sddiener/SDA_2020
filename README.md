@@ -1,4 +1,4 @@
-# Sentiment Analysis of Central Bank statement
+# Sentiment Analysis of Central Bank Monetary Policy Assessments
 
 A central bank's communication is nowadays a core element of monetary policy, and in that sense it is actually a monetary policy tool itself. The analysis of central bank communication can provide important insights into the economic outlook as well as signals about the future course of policy.
 In this repository, the swiss national Bank's monetary policy assessments are analyzed to predict developments in the economy.
