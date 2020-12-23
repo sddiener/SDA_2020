@@ -43,7 +43,7 @@ The output is the following:
 #### Count of positve vs. negative words with fed dictionary
 ![plot4](plots/count_words.png)
 
-### 05_Quant_Data
+### 05_Forecasting
 This script uses economic data from [FRED](https://fred.stlouisfed.org/) and trains different models to predict the GDP growth of Switzerland. The Input is the NetSentiment.csv indicator used as an extra explanatory variable.
 
 #### Economic predictor variables for the GDP forecasting model
