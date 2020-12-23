@@ -125,7 +125,6 @@ datemax = np.datetime64(Data.index[-1], 'Y') + np.timedelta64(1, 'Y')
 ax.set_xlim(datemin, datemax)
 
 ax.grid(True)
-ax.axvspan(['USREC'],color='grey',alpha=0.5)
 
 
 plt.show()
