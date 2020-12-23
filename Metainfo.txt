@@ -1,5 +1,5 @@
 
-Name of Quantlet: 'Sentiment Analysis of Central Bank statement'
+Name of Quantlet: 'SDA_2020_St_Gallen_SentimentAnalysis_of_CentralBank_Statements'
 
 Published in: 'SDA_2020_St_Gallen'
 
