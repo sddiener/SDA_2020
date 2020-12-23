@@ -44,7 +44,7 @@ The output is the following:
 ![plot4](plots/count_words.png)
 
 ### 05_Forecasting
-This script uses economic data from [FRED](https://fred.stlouisfed.org/) and trains different models to predict the GDP growth of Switzerland. The Input is the NetSentiment.csv indicator used as an extra explanatory variable.
+This script uses economic data from [FRED](https://fred.stlouisfed.org/) and trains different models to predict the GDP growth in Switzerland. Explanatory variables are several macroeconomic variables and the NetSentiment.csv indicator.
 
 #### Economic predictor variables for the GDP forecasting model
 ![plot5](plots/economic_varibales.png)
