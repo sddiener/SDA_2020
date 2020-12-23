@@ -50,4 +50,7 @@ This script uses economic data from [FRED](https://fred.stlouisfed.org/) and tra
 ![plot5](plots/economic_varibales.png)
 
 #### Model results
+- OLS (results: MSE: 2.83*e-05 and R2: 0.498)
+- ElsticNet (MSE: 3.73*e-05 and R2: 0.338)
+- RandomForest (MSE: 5.05*e-05 and R2: 0.103)
 ![plot6](plots/model_results.png)
